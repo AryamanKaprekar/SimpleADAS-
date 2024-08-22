@@ -2,21 +2,11 @@
 
 const int motorPin1 = 4;
 const int motorPin2 = 5;
-const int irSensor1 = 2;
-const int irSensor2 = 3;
-
-// Variables to store sensor values
-int irValue1 = 0;
-int irValue2 = 0;
 
 void setup() {
   // Set motor pins as output
   pinMode(motorPin1, OUTPUT);
   pinMode(motorPin2, OUTPUT);
-
-  // Set IR sensor pins as input
-  pinMode(irSensor1, INPUT);
-  pinMode(irSensor2, INPUT);
 
   // Initialize serial communication
   Serial.begin(9600);
@@ -32,16 +22,7 @@ void setup() {
 }
 
 void loop() {
-  // Read values from IR sensors
-  irValue1 = digitalRead(irSensor1);
-  irValue2 = digitalRead(irSensor2);
-
-  // Print sensor values to serial monitor for debugging
-  Serial.print("IR Sensor 1: ");
-  Serial.print(irValue1);
-  Serial.print("  IR Sensor 2: ");
-  Serial.println(irValue2);
-  // Check if any sensor detects an obstacle
+  
   if (Serial.available() > 0) {
     char command = Serial.read();
     controlCar(command);
