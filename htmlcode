@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remote Controlled Car</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .grid button {
+      padding: 20px;
+      font-size: 18px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .grid button:hover {
+      background-color: #45a049;
+    }
+    .forward {
+      grid-row: 1;
+      grid-column: 2;
+    }
+    .left {
+      grid-row: 2;
+      grid-column: 1;
+    }
+    .stop {
+      grid-row: 2;
+      grid-column: 2;
+      background-color: #f44336;
+    }
+    .stop:hover {
+      background-color: #e53935;
+    }
+    .right {
+      grid-row: 2;
+      grid-column: 3;
+    }
+    .sensor-status {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Remote Controlled Car</h1>
+    <div class="grid">
+      <button class="forward" onclick="sendCommand('F')">Forward</button>
+      <button class="left" onclick="sendCommand('L')">Left</button>
+      <button class="stop" onclick="sendCommand('S')">Stop</button>
+      <button class="right" onclick="sendCommand('R')">Right</button>
+    </div>
+    <div class="sensor-status">
+      <h2>IR Sensor Status</h2>
+      <p id="sensor1Status">Sensor 1: 0</p>
+      <p id="sensor2Status">Sensor 2: 0</p>
+    </div>
+  </div>
+
+  <script>
+    const apiKey = '956418f0-4b54-4685-9510-06fef9fe5a82';
+    const deviceId = 'BOLT7064036';
+
+    // Function to send command to Bolt Cloud
+    function sendCommand(command) {
+      fetch(`https://cloud.boltiot.com/remote/${apiKey}/serialWrite?data=${command}&deviceName=${deviceId}`)
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Function to fetch and display sensor data from Bolt Cloud
+    function fetchSensorData() {
+      fetch(`https://cloud.boltiot.com/remote/${apiKey}/digitalRead?pin=2&deviceName=${deviceId}`)
+        .then(response => response.json())
+        .then(data => {
+	value1=data.value;
+          document.getElementById("sensor1Status").innerText = "Sensor 1: " + data.value;
+        })
+        .catch(error => console.error('Error:', error));
+
+      fetch(`https://cloud.boltiot.com/remote/${apiKey}/digitalRead?pin=3&deviceName=${deviceId}`)
+        .then(response => response.json())
+        .then(data => {
+	value2=data.value;
+        })
+        .catch(error => console.error('Error:', error));
+	if((value1==1)&&(value2==1)){
+		document.getElementById("sensor1Status").innerText = "Caution";
+		document.getElementById("sensor2Status").innerText = "Obstacle Ahead";
+	}
+	else if(value1==1){
+		document.getElementById("sensor1Status").innerText = "Obstacle on the right";
+		document.getElementById("sensor2Status").innerText = "Go Left";
+	}
+	else if(value2==1){
+		document.getElementById("sensor1Status").innerText = "Obstacle on the left";
+		document.getElementById("sensor2Status").innerText = "Go Right";
+	}
+
+    }
+
+    // Fetch sensor data every second
+    setInterval(fetchSensorData, 10000);
+  </script>
+</body>
+</html>
