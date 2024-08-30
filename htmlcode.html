@@ -110,14 +110,17 @@
 	if((value1==1)&&(value2==1)){
 		document.getElementById("sensor1Status").innerText = "Caution";
 		document.getElementById("sensor2Status").innerText = "Obstacle Ahead";
+		sendCommand('S');
 	}
 	else if(value1==1){
 		document.getElementById("sensor1Status").innerText = "Obstacle on the right";
 		document.getElementById("sensor2Status").innerText = "Go Left";
+		sendCommand('S');
 	}
 	else if(value2==1){
 		document.getElementById("sensor1Status").innerText = "Obstacle on the left";
 		document.getElementById("sensor2Status").innerText = "Go Right";
+		sendCommand('S');
 	}
 
     }
